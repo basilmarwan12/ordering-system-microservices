@@ -76,6 +76,7 @@ services:
       DB_USER: root
       DB_PASSWORD: ${DB_PASSWORD:-root}
       JWT_SECRET: ${JWT_SECRET:-local-dev-only-secret-key-change-me-please-32bytes-min}
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
     depends_on:
       auth-db:
         condition: service_healthy
@@ -114,6 +115,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-root}
       RABBITMQ_HOST: rabbitmq
       JWT_SECRET: ${JWT_SECRET:-local-dev-only-secret-key-change-me-please-32bytes-min}
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
     depends_on:
       product-db:
         condition: service_healthy
@@ -133,6 +135,7 @@ services:
       RABBITMQ_HOST: rabbitmq
       PRODUCT_SERVICE_URL: http://product-service:8081
       JWT_SECRET: ${JWT_SECRET:-local-dev-only-secret-key-change-me-please-32bytes-min}
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
     depends_on:
       order-db:
         condition: service_healthy

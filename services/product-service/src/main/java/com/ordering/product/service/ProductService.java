@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
@@ -37,8 +39,8 @@ public class ProductService {
         return toResponse(findOrThrow(id));
     }
 
-    public List<Response> list() {
-        return productRepository.findAll().stream().map(this::toResponse).toList();
+    public Page<Response> list(Pageable pageable) {
+        return productRepository.findAll(pageable).map(this::toResponse);
     }
 
     public Response update(Long id, UpdateRequest req) {
@@ -78,7 +80,7 @@ public class ProductService {
                 .distinct()
                 .toList();
 
-        List<Product> locked = productRepository.findAllForUpdate(productIds);
+        List<Product> locked = productRepository.findAllById(productIds);
         Map<Long, Product> byId = locked.stream()
                 .collect(Collectors.toMap(Product::getId, p -> p));
 
@@ -95,7 +97,8 @@ public class ProductService {
             }
         }
 
-        // Every line checked out — now actually decrement.
+        // Every line checked out — now actually decrement. @Version detects a
+        // concurrent reservation; RabbitMQ retries the event after rollback.
         for (OrderCreatedEvent.Item item : event.getItems()) {
             Product product = byId.get(item.getProductId());
             product.setStock(product.getStock() - item.getQuantity());

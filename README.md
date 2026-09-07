@@ -94,6 +94,10 @@ Gateway Swagger UI is available at
 `http://localhost:8080/swagger-ui.html`; its service selector loads the auth,
 product, and order OpenAPI documents through the gateway.
 
+Collection endpoints are paginated. Use `page` and `size` query parameters,
+for example `GET /products?page=0&size=20`, `GET /orders?page=0&size=20`, or
+the admin-only `GET /users?page=0&size=20`. The maximum page size is 100.
+
 Each service has its own MySQL container/schema (`auth-db`, `product-db`, and `order-db`)
 — this is intentional; it's the main thing that makes them independently deployable.
 
@@ -112,6 +116,11 @@ Each service has its own MySQL container/schema (`auth-db`, `product-db`, and `o
 - **Distributed tracing**: no correlation ID is threaded through the REST call +
   event chain yet. Worth adding (e.g. Micrometer Tracing + Zipkin) once there are
   enough services that a request spans more than two hops.
+
+Product stock reservations use optimistic locking through a JPA `@Version`
+column. Concurrent reservations no longer hold database write locks while
+waiting; failed version updates are retried by the RabbitMQ listener according
+to its configured retry policy.
 
 ## Not yet migrated from the monolith
 

@@ -34,6 +34,10 @@ public class Product {
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -77,11 +79,11 @@ public class OrderService {
     }
 
     public Response get(Long id) {
-        return toResponse(findOrThrow(id));
+        return toResponse(orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id)));
     }
 
-    public List<Response> list() {
-        return orderRepository.findAll().stream().map(this::toResponse).toList();
+    public Page<Response> list(Pageable pageable) {
+        return orderRepository.findAllByOrderByCreatedAtDesc(pageable).map(this::toResponse);
     }
 
     private Order findOrThrow(Long id) {

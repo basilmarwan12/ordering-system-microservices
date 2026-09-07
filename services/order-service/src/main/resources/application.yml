@@ -5,6 +5,12 @@ spring:
   application:
     name: order-service
 
+  data:
+    web:
+      pageable:
+        default-page-size: 20
+        max-page-size: 100
+
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:order_db}?createDatabaseIfNotExist=true
     username: ${DB_USER:root}
